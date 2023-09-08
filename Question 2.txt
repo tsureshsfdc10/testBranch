@@ -1,0 +1,48 @@
+displayAccount.html
+
+
+<template>
+    <lightning-card title = "Display Accounts">
+	<template lwc:if={accounts.data}>
+           <template for:each={accounts} for:item="account">
+              <p> <strong> Name={account.Name}</p>
+           </template>
+	</template>
+</template>
+
+
+displayAccount.js
+
+
+import { LightningElement, wire } from 'lwc';
+import getAccounts from '@salesforce/apex/AccountsController.getAccounts';
+
+export default class displayAccount extends LightningElement {
+    @wire(getAccounts) accounts;
+}
+
+
+displayAccount.js-meta.xml
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+</LightningComponentBundle>
+
+
+
+Apex Class - AccountsController.cls
+
+public with sharing class AccountsController {
+    @AuraEnabled(cacheable=true)
+    public static List<Account> getAccounts() {
+        return [SELECT Id, Name FROM Account ORDER BY CreatedDate DESC LIMIT 10];
+    }
+}
+
